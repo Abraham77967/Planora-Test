@@ -2505,8 +2505,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const defaultLon = -87.9795;
         const units = 'imperial'; // Use imperial for Fahrenheit
         
-        // Get the weather container and create a location button if needed
+        // Get the weather container
         const weatherWidget = document.getElementById('weather-widget');
+        
+        // Attach event listener to the location button that's already in the HTML
+        const locationBtn = document.getElementById('request-location-btn');
+        if (locationBtn) {
+            // Remove any existing listeners first to prevent duplicates
+            const newLocationBtn = locationBtn.cloneNode(true);
+            locationBtn.parentNode.replaceChild(newLocationBtn, locationBtn);
+            newLocationBtn.addEventListener('click', requestLocationPermission);
+            console.log('[WEATHER] Location button event listener attached');
+        } else {
+            console.log('[WEATHER] Location button not found in DOM');
+        }
         
         // Function to show loading state in the weather widget
         function showWeatherLoading() {
@@ -2548,7 +2560,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
         
-        // Function to add location request button
+        // Function to add location request button - no longer needed since it's in HTML
+        // But keeping it for reference and backward compatibility
         function addLocationRequestButton() {
             // Check if button already exists
             if (document.getElementById('request-location-btn')) return;
@@ -2560,9 +2573,9 @@ document.addEventListener('DOMContentLoaded', () => {
             locationBtn.innerHTML = '<span>📍</span> Use my location';
             locationBtn.addEventListener('click', requestLocationPermission);
             
-            // Add button to weather widget header
-            const weatherHeader = weatherWidget.querySelector('.weather-header');
-            weatherHeader.appendChild(locationBtn);
+            // Add button to weather widget footer instead of header
+            const weatherFooter = weatherWidget.querySelector('.weather-footer');
+            weatherFooter.appendChild(locationBtn);
         }
         
         // Function to request location permission
@@ -2593,7 +2606,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.getElementById('weather-location').textContent = 'Default location';
                     },
                     // Options
-                    { timeout: 10000 }
+                    { timeout: 10000, enableHighAccuracy: true, maximumAge: 0 }
                 );
             } else {
                 // Browser doesn't support geolocation
@@ -2612,19 +2625,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedLat && savedLon && locationAge && locationAge < 3600000) {
             console.log('[WEATHER] Using saved location');
             getWeatherFromCoords(parseFloat(savedLat), parseFloat(savedLon));
-        } else {
-            // Try to get fresh coordinates
-            console.log('[WEATHER] Requesting fresh location');
-            addLocationRequestButton();
             
-            // Auto-prompt for location if this is the first time
-            if (!localStorage.getItem('weatherLocationRequested')) {
-                localStorage.setItem('weatherLocationRequested', 'true');
-                requestLocationPermission();
-            } else {
-                // If not first time, use default location but show location button
-                getWeatherFromCoords(defaultLat, defaultLon);
+            // Hide the location button if we have saved location
+            if (locationBtn) {
+                locationBtn.style.display = 'none';
             }
+        } else {
+            // Use default location initially, but the user can click the button to update
+            console.log('[WEATHER] Using default location initially');
+            getWeatherFromCoords(defaultLat, defaultLon);
         }
     }
 
@@ -2842,4 +2851,184 @@ function refreshAllDeadlineDisplays() {
     });
     
     console.log('[DEADLINES] Deadline displays refreshed');
+}
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    
+    // Initialize the location request button
+    initializeLocationButton();
+    
+    // Initialize weather functionality
+    fetchWeatherData();
+});
+
+// Initialize the location button
+function initializeLocationButton() {
+    const locationBtn = document.getElementById('request-location-btn');
+    if (locationBtn) {
+        console.log('Location button found, attaching event listener');
+        locationBtn.addEventListener('click', requestLocationPermission);
+    } else {
+        console.error('Location button not found in the DOM');
+    }
+}
+
+// Function to request location permission
+function requestLocationPermission() {
+    console.log('Location permission requested');
+    
+    // Show loading status
+    document.getElementById('weather-condition').textContent = 'Requesting location...';
+    document.getElementById('weather-location').textContent = 'Please allow access';
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            // Success callback
+            (position) => {
+                console.log('Location successfully obtained');
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                // Use the coordinates to fetch weather
+                getWeatherData(lat, lon);
+                
+                // Hide location button after successful location
+                const locationBtn = document.getElementById('request-location-btn');
+                if (locationBtn) {
+                    locationBtn.style.display = 'none';
+                }
+            },
+            // Error callback
+            (error) => {
+                console.error('Geolocation error:', error);
+                
+                // Show error message based on error code
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        document.getElementById('weather-condition').textContent = 'Location access denied';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        document.getElementById('weather-condition').textContent = 'Location unavailable';
+                        break;
+                    case error.TIMEOUT:
+                        document.getElementById('weather-condition').textContent = 'Location request timed out';
+                        break;
+                    default:
+                        document.getElementById('weather-condition').textContent = 'Cannot get location';
+                }
+                document.getElementById('weather-location').textContent = 'Using default location';
+                
+                // Use default location as fallback
+                getWeatherData(42.2192, -87.9795);
+            },
+            // Options
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        // Browser doesn't support geolocation
+        console.error('Geolocation is not supported by this browser');
+        document.getElementById('weather-condition').textContent = 'Geolocation not supported';
+        document.getElementById('weather-location').textContent = 'Using default location';
+        
+        // Use default location as fallback
+        getWeatherData(42.2192, -87.9795);
+    }
+}
+
+// Fetch weather data with coordinates
+function getWeatherData(lat, lon) {
+    const apiKey = 'b2cfa04dc7aff6a53b64fabc3a5307bc';
+    const units = 'imperial'; // For Fahrenheit
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${apiKey}`;
+    
+    console.log('Fetching weather data');
+    document.getElementById('weather-condition').textContent = 'Loading weather...';
+    
+    fetch(weatherUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Weather API error: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Weather data received:', data);
+            updateWeatherWidget(data);
+            
+            // Save location to localStorage
+            localStorage.setItem('weatherLat', lat);
+            localStorage.setItem('weatherLon', lon);
+            localStorage.setItem('weatherLocationTime', Date.now());
+        })
+        .catch(error => {
+            console.error('Error fetching weather:', error);
+            document.getElementById('weather-condition').textContent = 'Weather data unavailable';
+            document.getElementById('weather-location').textContent = 'Try again later';
+        });
+}
+
+// Update weather widget with data
+function updateWeatherWidget(data) {
+    // Extract weather information
+    const temp = Math.round(data.main.temp);
+    const condition = data.weather[0].description;
+    const locationName = data.name;
+    const humidity = data.main.humidity;
+    const windSpeed = Math.round(data.wind.speed);
+    const iconCode = data.weather[0].icon;
+    
+    // Update UI elements
+    document.getElementById('weather-temp').textContent = temp;
+    document.getElementById('weather-condition').textContent = capitalizeEachWord(condition);
+    document.getElementById('weather-location').textContent = locationName;
+    document.getElementById('weather-humidity').textContent = humidity;
+    document.getElementById('weather-wind').textContent = windSpeed;
+    
+    // Update weather icon
+    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
+    document.getElementById('weather-icon-img').src = iconUrl;
+    
+    // Update date
+    const today = new Date();
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    document.getElementById('weather-date').textContent = today.toLocaleDateString('en-US', options);
+}
+
+// Helper function to capitalize each word
+function capitalizeEachWord(str) {
+    return str.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+}
+
+// Initial weather check
+function fetchWeatherData() {
+    // Check if we have saved location data
+    const savedLat = localStorage.getItem('weatherLat');
+    const savedLon = localStorage.getItem('weatherLon');
+    const savedTime = localStorage.getItem('weatherLocationTime');
+    
+    // If saved location is less than 1 hour old, use it
+    if (savedLat && savedLon && savedTime) {
+        const locationAge = Date.now() - parseInt(savedTime);
+        if (locationAge < 3600000) { // 1 hour in milliseconds
+            console.log('Using saved location');
+            getWeatherData(parseFloat(savedLat), parseFloat(savedLon));
+            
+            // Hide location button when using saved location
+            const locationBtn = document.getElementById('request-location-btn');
+            if (locationBtn) {
+                locationBtn.style.display = 'none';
+            }
+            return;
+        }
+    }
+    
+    // Otherwise use default location but keep the button visible for user to update
+    console.log('Using default location');
+    getWeatherData(42.2192, -87.9795);
 }
