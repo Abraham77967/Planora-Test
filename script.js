@@ -55,6 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return goal; // Already an object, or will be filtered if invalid
     }).filter(goal => goal && typeof goal.text === 'string'); // Ensure valid structure
     
+    // Make sure the Checklist Progress panel is rendered on page load
+    setTimeout(() => {
+        console.log('[INIT] Rendering event progress panel on page load');
+        renderEventProgressPanel();
+    }, 500);  // Small delay to ensure DOM is fully ready
+    
     // --- News Integration ---
     const refreshNewsButton = document.getElementById('refresh-news-button');
     let currentNewsCategory = 'technology'; // Default category
@@ -1205,6 +1211,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const globalNotes = window.calendarNotes;
         
         console.log('[PROGRESS PANEL] Starting to render progress panel');
+        console.log('[PROGRESS PANEL] Current global notes object:', globalNotes);
+        
+        // Get the progress panel container
+        const progressItemsContainer = document.getElementById('progress-items-container');
+        if (!progressItemsContainer) {
+            console.error('[PROGRESS PANEL] Container element not found in DOM!');
+            return;
+        }
         
         // Clear existing panel content
         progressItemsContainer.innerHTML = '';
@@ -1215,6 +1229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Empty check for test mode
         if (datesWithEvents.length === 0) {
+            console.log('[PROGRESS PANEL] No dates with events found');
             const noEventsMessage = document.createElement('div');
             noEventsMessage.classList.add('no-events-message-panel');
             noEventsMessage.textContent = 'No events with checklists. Add some events to see them here!';
@@ -1222,20 +1237,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        datesWithEvents.forEach(([dateString, eventsArray]) => {
+            console.log(`[PROGRESS PANEL] Date: ${dateString}, Events: ${eventsArray.length}`);
+        });
+        
         // Filter to include only events with checklists and sort by date
         let eventsWithChecklists = [];
         
         datesWithEvents.forEach(([dateString, eventsArray]) => {
-            console.log(`Processing date ${dateString} with ${eventsArray.length} events`);
+            console.log(`[PROGRESS PANEL] Processing date ${dateString} with ${eventsArray.length} events`);
             
             // For each date, filter to events with checklists
             const dateEvents = eventsArray.filter(event => {
+                // Log each event's data for debugging
+                console.log(`[PROGRESS PANEL] Event ${event.id || 'unknown'}: `, event);
                 const hasChecklist = event.checklist && event.checklist.length > 0;
-                console.log(`Event ${event.id}: has checklist = ${hasChecklist}, items: ${event.checklist ? event.checklist.length : 0}`);
+                console.log(`[PROGRESS PANEL] Event ${event.id || 'unknown'}: has checklist = ${hasChecklist}, items: ${event.checklist ? event.checklist.length : 0}`);
                 return hasChecklist;
             });
             
-            console.log(`Found ${dateEvents.length} events with checklists for ${dateString}`);
+            console.log(`[PROGRESS PANEL] Found ${dateEvents.length} events with checklists for ${dateString}`);
             
             // Add date and event details to our array
             dateEvents.forEach(event => {
@@ -1246,13 +1267,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        console.log('Total events with checklists:', eventsWithChecklists.length);
+        console.log('[PROGRESS PANEL] Total events with checklists:', eventsWithChecklists.length);
+        if (eventsWithChecklists.length > 0) {
+            console.log('[PROGRESS PANEL] First event with checklist:', eventsWithChecklists[0]);
+        }
         
         // Sort by date
         eventsWithChecklists.sort((a, b) => new Date(a.dateString) - new Date(b.dateString));
         
         // If no events with checklists, show message
         if (eventsWithChecklists.length === 0) {
+            console.log('[PROGRESS PANEL] No events with checklists found');
             const noEventsMessage = document.createElement('div');
             noEventsMessage.classList.add('no-events-message-panel');
             noEventsMessage.textContent = 'No upcoming events with checklists. Add some checklists to your events!';
@@ -1270,8 +1295,12 @@ document.addEventListener('DOMContentLoaded', () => {
             groupedByDate[item.dateString].push(item.event);
         });
         
+        console.log('[PROGRESS PANEL] Events grouped by date:', groupedByDate);
+        
         // Create and append elements for each date
         Object.entries(groupedByDate).forEach(([dateString, events]) => {
+            console.log(`[PROGRESS PANEL] Rendering date ${dateString} with ${events.length} events`);
+            
             // Create the card container
             const itemContainer = document.createElement('div');
             itemContainer.classList.add('progress-item');
@@ -1311,6 +1340,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add each event
             events.forEach((event, index) => {
+                console.log(`[PROGRESS PANEL] Rendering event ${index} for date ${dateString}:`, event);
+                
                 const eventDiv = document.createElement('div');
                 eventDiv.className = 'panel-event';
                 
@@ -1359,25 +1390,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Add checklist progress for this event
                 if (event.checklist && event.checklist.length > 0) {
+                    console.log(`[PROGRESS PANEL] Event ${event.id} has ${event.checklist.length} checklist items`);
+                    
                     const totalItems = event.checklist.length;
                     const completedItems = event.checklist.filter(item => item.done).length;
                     const percent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
-            const progressContainer = document.createElement('div');
-            progressContainer.classList.add('progress-container');
-            
-            const progressBarContainer = document.createElement('div');
-            progressBarContainer.classList.add('progress-bar-container');
-            
-            const progressBar = document.createElement('div');
-            progressBar.classList.add('progress-bar');
+                    const progressContainer = document.createElement('div');
+                    progressContainer.classList.add('progress-container');
+                    
+                    const progressBarContainer = document.createElement('div');
+                    progressBarContainer.classList.add('progress-bar-container');
+                    
+                    const progressBar = document.createElement('div');
+                    progressBar.classList.add('progress-bar');
                     progressBar.style.width = `${percent}%`;
-            
-            progressBarContainer.appendChild(progressBar);
-            progressContainer.appendChild(progressBarContainer);
+                    
+                    progressBarContainer.appendChild(progressBar);
+                    progressContainer.appendChild(progressBarContainer);
 
-            const progressSummary = document.createElement('div');
-            progressSummary.classList.add('progress-summary');
+                    const progressSummary = document.createElement('div');
+                    progressSummary.classList.add('progress-summary');
                     progressSummary.textContent = `${completedItems}/${totalItems} Tasks`;
                     
                     // Add toggle button
@@ -1397,101 +1430,106 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     
                     // Create checklist container (initially visible)
-            const checklistContainer = document.createElement('div');
+                    const checklistContainer = document.createElement('div');
                     checklistContainer.classList.add('panel-checklist-container');
                     checklistContainer.style.display = 'block';
-            
+                    
                     // Add checklist items
                     const checklistUl = document.createElement('ul');
                     checklistUl.classList.add('panel-checklist');
 
                     // Add clickable checklist items
-                    event.checklist.forEach((item, index) => {
-                const li = document.createElement('li');
-
-                // Create checkbox with proper event handler
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `panel-cb-${event.id}-${index}`;
-                checkbox.checked = item.done;
-                
-                // Create label once
-                const label = document.createElement('label');
-                label.classList.add('panel-checklist-label');
-                label.htmlFor = checkbox.id;
-                label.textContent = item.task;
-                
-                if (item.done) {
-                    label.classList.add('completed');
-                }
-                
-                // Prevent event propagation to parent
-                checkbox.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent opening edit modal
-                });
-                
-                label.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent opening edit modal
-                });
-                
-                // Add elements to the list item
-                li.appendChild(checkbox);
-                li.appendChild(label);
-                
-                // Add deadline display if there is a deadline - now positioned after label
-                if (item.deadline) {
-                    const deadlineElement = createDeadlineElement(item.deadline);
-                    if (deadlineElement) {
-                        deadlineElement.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent opening edit modal
-                });
-                        li.appendChild(deadlineElement);
-                    }
-                }
-                
-                // Add event listener for checkbox changes
-                checkbox.addEventListener('change', (e) => {
-                    // Always use the global notes object
-                    const globalNotes = window.calendarNotes;
-                    
-                    // Update the checked state in the UI
-                    label.classList.toggle('completed', checkbox.checked);
-                    
-                    // Find and update the item in the data structure
-                    const updatedEvents = globalNotes[dateString] || [];
-                    const eventIndex = updatedEvents.findIndex(e => e.id === event.id);
-                    
-                    if (eventIndex !== -1) {
-                        const checklistItems = updatedEvents[eventIndex].checklist || [];
-                        const itemIndex = checklistItems.findIndex(i => i.task === item.task);
+                    event.checklist.forEach((item, idx) => {
+                        console.log(`[PROGRESS PANEL] Adding checklist item ${idx}: ${item.task}, done: ${item.done}`);
                         
-                        if (itemIndex !== -1) {
-                            // Update the done state
-                            checklistItems[itemIndex].done = checkbox.checked;
-                            
-                            // Update in the data structure
-                            updatedEvents[eventIndex].checklist = checklistItems;
-                            globalNotes[dateString] = updatedEvents;
-                            // Update local reference
-                            notes = globalNotes;
-                            
-                            // Update progress bar
-                            const totalItems = checklistItems.length;
-                            const completedItems = checklistItems.filter(i => i.done).length;
-                            const percent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
-                            progressBar.style.width = `${percent}%`;
-                            progressSummary.textContent = `${completedItems}/${totalItems} Tasks`;
-                            
-                            // Save to Firebase if signed in
-                            if (firebase.auth().currentUser) {
-                                saveNotesToFirebase();
-                                console.log('[CHECKBOX] Saved change to Firebase');
-                            } else {
-                                console.log('[CHECKBOX] Test mode: Checklist update saved to memory only');
+                        const li = document.createElement('li');
+
+                        // Create checkbox with proper event handler
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `panel-cb-${event.id}-${idx}`;
+                        checkbox.checked = item.done;
+                        
+                        // Create label once
+                        const label = document.createElement('label');
+                        label.classList.add('panel-checklist-label');
+                        label.htmlFor = checkbox.id;
+                        label.textContent = item.task;
+                        
+                        if (item.done) {
+                            label.classList.add('completed');
+                        }
+                        
+                        // Prevent event propagation to parent
+                        checkbox.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent opening edit modal
+                        });
+                        
+                        label.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent opening edit modal
+                        });
+                        
+                        // Add elements to the list item
+                        li.appendChild(checkbox);
+                        li.appendChild(label);
+                        
+                        // Add deadline display if there is a deadline - now positioned after label
+                        if (item.deadline) {
+                            const deadlineElement = createDeadlineElement(item.deadline);
+                            if (deadlineElement) {
+                                deadlineElement.addEventListener('click', (e) => {
+                                    e.stopPropagation(); // Prevent opening edit modal
+                                });
+                                li.appendChild(deadlineElement);
                             }
                         }
-                    }
-                });
+                        
+                        // Add event listener for checkbox changes
+                        checkbox.addEventListener('change', (e) => {
+                            // Always use the global notes object
+                            const globalNotes = window.calendarNotes;
+                            
+                            // Update the checked state in the UI
+                            label.classList.toggle('completed', checkbox.checked);
+                            
+                            // Find and update the item in the data structure
+                            const updatedEvents = globalNotes[dateString] || [];
+                            const eventIndex = updatedEvents.findIndex(e => e.id === event.id);
+                            
+                            if (eventIndex !== -1) {
+                                const checklistItems = updatedEvents[eventIndex].checklist || [];
+                                const itemIndex = checklistItems.findIndex(i => i.task === item.task);
+                                
+                                if (itemIndex !== -1) {
+                                    console.log(`[PROGRESS PANEL] Updating checklist item ${itemIndex} in event ${event.id} to done: ${checkbox.checked}`);
+                                    
+                                    // Update the done state
+                                    checklistItems[itemIndex].done = checkbox.checked;
+                                    
+                                    // Update in the data structure
+                                    updatedEvents[eventIndex].checklist = checklistItems;
+                                    globalNotes[dateString] = updatedEvents;
+                                    
+                                    // Update local reference
+                                    notes = globalNotes;
+                                    
+                                    // Update progress bar
+                                    const totalItems = checklistItems.length;
+                                    const completedItems = checklistItems.filter(i => i.done).length;
+                                    const percent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+                                    progressBar.style.width = `${percent}%`;
+                                    progressSummary.textContent = `${completedItems}/${totalItems} Tasks`;
+                                    
+                                    // Save to Firebase if signed in
+                                    if (firebase.auth().currentUser) {
+                                        saveNotesToFirebase();
+                                        console.log('[CHECKBOX] Saved change to Firebase');
+                                    } else {
+                                        console.log('[CHECKBOX] Test mode: Checklist update saved to memory only');
+                                    }
+                                }
+                            }
+                        });
                         
                         // Append the list item to the checklist
                         checklistUl.appendChild(li);
@@ -1511,6 +1549,8 @@ document.addEventListener('DOMContentLoaded', () => {
             itemContainer.appendChild(eventsContainer);
             progressItemsContainer.appendChild(itemContainer);
         });
+        
+        console.log('[PROGRESS PANEL] Finished rendering progress panel');
     }
 
     // --- Modal Functions ---
@@ -2215,6 +2255,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update calendar view
         renderCalendarView();
+        
+        // IMPORTANT: Update the Checklist Progress panel
+        renderEventProgressPanel();
         
         // Log the current state
         console.log('[UI UPDATE] Completed. Events for date', selectedDateString + ':',
@@ -3028,7 +3071,29 @@ function fetchWeatherData() {
         }
     }
     
-    // Otherwise use default location but keep the button visible for user to update
-    console.log('Using default location');
-    getWeatherData(42.2192, -87.9795);
+    // Otherwise show "No info available" state until user shares location
+    console.log('No location available, showing initial state');
+    document.getElementById('weather-temp').textContent = '--';
+    document.getElementById('weather-condition').textContent = 'No info available';
+    document.getElementById('weather-location').textContent = 'Share your location';
+    document.getElementById('weather-humidity').textContent = '--';
+    document.getElementById('weather-wind').textContent = '--';
+    document.getElementById('weather-icon-img').src = 'https://openweathermap.org/img/wn/03d@4x.png'; // Generic cloud icon
+    
+    // Make sure location button is visible
+    const locationBtn = document.getElementById('request-location-btn');
+    if (locationBtn) {
+        locationBtn.style.display = 'block';
+        // Add subtle animation to highlight the button
+        locationBtn.classList.add('pulse-animation');
+        // Remove animation after a few seconds
+        setTimeout(() => {
+            locationBtn.classList.remove('pulse-animation');
+        }, 5000);
+    }
+    
+    // Update date even without weather
+    const today = new Date();
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    document.getElementById('weather-date').textContent = today.toLocaleDateString('en-US', options);
 }
