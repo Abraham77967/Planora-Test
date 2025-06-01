@@ -297,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const userEmail = document.getElementById('user-email');
     const googleSignInButton = document.getElementById('google-signin-button');
     const logoutButton = document.getElementById('logout-button');
-    const toggleViewButton = document.getElementById('toggle-view-button');
 
     // Main Goals elements
     const goalsContainer = document.getElementById('goals-container');
@@ -1147,7 +1146,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Always hide second calendar since we're only showing one month
         calendar2Container.style.display = 'none';
-        toggleViewButton.style.display = isDesktop ? 'none' : 'inline-block'; // Hide toggle on desktop
         
         if (isDesktop) {
             console.log('[CALENDAR VIEW] Rendering desktop view (single month)');
@@ -1156,11 +1154,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentView === 'week') {
                 console.log('[CALENDAR VIEW] Rendering mobile week view');
                 renderMobileTwoWeekView();
-                toggleViewButton.textContent = 'Month View';
             } else {
                 console.log('[CALENDAR VIEW] Rendering mobile month view');
                 renderMobileMonthView();
-                toggleViewButton.textContent = 'Week View';
             }
         }
         
@@ -2276,21 +2272,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         renderCalendarView();
-    });
-
-    // Toggle view only affects mobile
-    toggleViewButton.addEventListener('click', () => {
-        currentView = (currentView === 'week') ? 'month' : 'week';
-        if (currentView === 'month') {
-             // When switching to month view, set month based on current week view start date
-            mobileMonthDate = new Date(mobileWeekStartDate);
-            mobileMonthDate.setDate(1);
-        } else {
-            // When switching back to week view, reset to today
-             mobileWeekStartDate = new Date(); 
-             mobileWeekStartDate.setHours(0, 0, 0, 0);
-        }
-        renderCalendarView(); // Re-render mobile view
     });
 
     // Modal event listeners
