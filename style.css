@@ -2,7 +2,7 @@
 @import url('https://fonts.cdnfonts.com/css/spotify-mix');
 
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Monoton&family=Pacifico&family=Comfortaa:wght@400;700&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Nunito:wght@300;400;600;700&family=Overpass:wght@300;400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Monoton&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Nunito:wght@300;400;600;700&family=Overpass:wght@300;400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap');
 
 /* Animation Keyframes */
 @keyframes fadeIn {
@@ -64,25 +64,6 @@
     0% { box-shadow: 0 0 6px rgba(165, 214, 167, 0.4), 0 0 0 0 rgba(165, 214, 167, 0.2); } /* Soft Green shadow */
     50% { box-shadow: 0 0 12px rgba(165, 214, 167, 0.6), 0 0 0 8px rgba(165, 214, 167, 0); }
     100% { box-shadow: 0 0 6px rgba(165, 214, 167, 0.4), 0 0 0 0 rgba(165, 214, 167, 0.2); }
-}
-
-@keyframes buttonPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(41, 44, 109, 0.3);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-}
-
-.pulse-animation {
-    animation: buttonPulse 1.5s infinite ease-in-out;
 }
 
 * {
@@ -167,27 +148,104 @@ body {
 }
 
 /* Adjust month display size */
-.calendar-header h3 {
-    font-size: 1.5rem;
+.calendar-header {
     text-align: center;
+    align-items: center;
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.calendar-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #161853;
+    font-family: 'Overpass', sans-serif;
+    font-weight: 600;
+}
+
+/* Month Navigation Styles */
+.month-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.month-nav-button {
+    background: rgba(41, 44, 109, 0.15);
+    border: 1px solid rgba(41, 44, 109, 0.2);
+    color: #161853;
+    border-radius: 8px;
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px 15px;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.month-nav-button:hover {
+    background: rgba(41, 44, 109, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.month-nav-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Today button styling */
+.today-button {
+    background: linear-gradient(135deg, #EC255A 0%, #FF6B6B 100%);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(236, 37, 90, 0.2);
+    margin: 0 auto;
+    display: block;
+    width: auto;
+}
+
+.today-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(236, 37, 90, 0.3);
+    background: linear-gradient(135deg, #d01a4c 0%, #ff5252 100%);
+}
+
+.today-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(236, 37, 90, 0.2);
 }
 
 /* Header and Controls Redesign */
 .calendar-controls {
-    background: linear-gradient(135deg, #1a1c3d 0%, #292C6D 100%);
-    padding: 20px 30px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2),
-                inset 0 0 25px rgba(236, 37, 90, 0.15);
+    background: linear-gradient(135deg, rgba(41, 44, 109, 0.95) 0%, rgba(26, 28, 61, 0.95) 100%);
+    padding: 18px 30px;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 35px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end; /* Position elements to the right side */
     flex-wrap: wrap;
     gap: 15px;
     position: relative;
     overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .calendar-controls::before {
@@ -197,94 +255,79 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(
-        circle at 30% 30%,
-        rgba(52, 152, 219, 0.08) 0%,
-        transparent 60%
-    );
+    background: 
+        linear-gradient(45deg, 
+            rgba(255, 255, 255, 0.03) 0%, 
+            rgba(255, 255, 255, 0) 50%,
+            rgba(255, 255, 255, 0.03) 100%);
     pointer-events: none;
 }
 
-.calendar-controls::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(
-        circle at center,
-        transparent 30%,
-        rgba(236, 37, 90, 0.03) 70%,
-        transparent 100%
-    );
-    animation: hue-rotate 15s infinite linear;
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-@keyframes hue-rotate {
-    0% {
-        filter: hue-rotate(0deg);
-    }
-    100% {
-        filter: hue-rotate(360deg);
-    }
-}
-
+/* Hide the month/year text in the header area */
 .calendar-controls h2 {
-    font-family: 'Spotify Mix', sans-serif;
-    font-size: 1.8rem;
-    color: #ffffff;
-    margin: 0;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none; /* Hide the month/year text that appears next to login */
+}
+
+/* Add additional CSS for the header layout */
+.site-header {
+    background: linear-gradient(135deg, #161853 0%, #292C6D 50%, #384099 100%);
+    padding: 30px 40px;
+    border-radius: 24px 24px 0 0;
+    margin-bottom: 0;
+    box-shadow: 
+        0 6px 30px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(41, 44, 109, 0.2) inset;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1; /* Ensure header stays below other interactive elements */
+}
+
+/* Center the login in the header but keep it on the right */
+.header-auth {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 0; /* Reset margin */
 }
 
 .calendar-controls button {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
     cursor: pointer;
     font-family: 'Quicksand', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
     font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-controls button:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-controls button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .today-button {
     background: #EC255A !important;
     border: none !important;
     font-weight: 600;
-    padding: 8px 20px !important;
-    border-radius: 8px;
-    color: white;
-    display: block;
-    margin: 5px auto 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(236, 37, 90, 0.2);
-    font-size: 0.95rem;
+    padding: 10px 20px !important;
 }
 
 .today-button:hover {
     background: #d01a4c !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(236, 37, 90, 0.3);
-}
-
-.today-button:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 3px rgba(236, 37, 90, 0.2);
+    transform: translateY(-1px);
 }
 
 /* Header Auth Section Redesign */
@@ -302,7 +345,7 @@ body {
 }
 
 .header-auth .google-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
     padding: 8px 16px;
@@ -893,17 +936,20 @@ body {
 }
 
 #toggle-view-button {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 5px 10px;
-    font-size: 0.8em; /* Smaller font */
-    border-radius: 4px;
-    display: none; /* Hide by default (for desktop) */
-    margin-left: 5px;
+    margin-right: auto; /* Push to left side */
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
 
 #toggle-view-button:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    transform: scale(1.05); /* Slight scale on hover */
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
 }
 
 /* Day styling for week view */
@@ -3290,33 +3336,32 @@ button::after {
 
 /* Location request button styles */
 .location-request-button {
-    background: linear-gradient(135deg, rgba(41, 44, 109, 0.15) 0%, rgba(41, 44, 109, 0.25) 100%);
+    background: rgba(41, 44, 109, 0.1);
     border: 1px solid rgba(41, 44, 109, 0.2);
     color: #292C6D;
-    font-size: 0.9rem;
-    padding: 8px 15px;
+    font-size: 0.8rem;
+    padding: 5px 10px;
     border-radius: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 12px auto 0;
+    margin: 10px auto 0;
     transition: all 0.3s ease;
     font-family: 'Quicksand', sans-serif;
     font-weight: 600;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: fit-content;
 }
 
 .location-request-button span {
-    margin-right: 6px;
-    font-size: 1.1rem;
+    margin-right: 5px;
+    font-size: 1rem;
 }
 
 .location-request-button:hover {
-    background: linear-gradient(135deg, rgba(41, 44, 109, 0.2) 0%, rgba(41, 44, 109, 0.3) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: rgba(41, 44, 109, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
 }
 
 .location-request-button:active {
@@ -3343,16 +3388,18 @@ button::after {
     margin-right: 15px;
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
     transform: scale(1.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.weather-icon img {
+.weather-icon svg {
     width: 100%;
     height: 100%;
-    object-fit: contain;
     transition: transform 0.3s ease;
 }
 
-.weather-widget:hover .weather-icon img {
+.weather-widget:hover .weather-icon svg {
     transform: scale(1.05) rotate(5deg);
 }
 
@@ -4237,88 +4284,440 @@ button::after {
     gap: 5px; /* Slightly smaller gap for month view */
 }
 
-/* Brand Styling - Neon Effect */
-.brand-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-right: auto;
+/* Site Header Styling - Refined and Enhanced */
+.site-header {
+    background: linear-gradient(135deg, #161853 0%, #292C6D 50%, #384099 100%);
+    padding: 30px 40px;
+    border-radius: 24px 24px 0 0;
+    margin-bottom: 0;
+    box-shadow: 
+        0 6px 30px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(41, 44, 109, 0.2) inset;
     position: relative;
-    z-index: 5;
+    overflow: hidden;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1; /* Ensure header stays below other interactive elements */
 }
 
-.brand-name {
-    font-family: 'Monoton', cursive;
-    font-size: 2.3rem;
-    color: #fff;
-    margin: 0;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-shadow: 
-        0 0 7px rgba(236, 37, 90, 0.9),
-        0 0 10px rgba(236, 37, 90, 0.7),
-        0 0 21px rgba(236, 37, 90, 0.5),
-        0 0 42px rgba(236, 37, 90, 0.4);
-    animation: neon-pulse 1.5s ease-in-out infinite alternate;
-    position: relative;
-    line-height: 1.1;
-}
-
-.brand-name::before {
-    content: attr(data-text);
+.site-header::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
-    z-index: -1;
-    color: #EC255A;
-    filter: blur(15px);
-    opacity: 0.8;
-    animation: neon-blur 3s ease-in-out infinite alternate;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(
+            circle at 20% 30%, 
+            rgba(236, 37, 90, 0.08) 0%, 
+            rgba(236, 37, 90, 0) 70%
+        ),
+        radial-gradient(
+            circle at 80% 20%, 
+            rgba(41, 44, 109, 0.15) 0%, 
+            rgba(41, 44, 109, 0) 60%
+        );
+    pointer-events: none;
 }
 
-.brand-tagline {
-    font-family: 'Comfortaa', sans-serif;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
+.site-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0) 100%
+    );
+}
+
+@keyframes gentleGlow {
+    0% {
+        text-shadow: 
+            0 0 10px rgba(236, 37, 90, 0.4),
+            0 0 20px rgba(41, 44, 109, 0.2),
+            0 0 30px rgba(41, 44, 109, 0.1);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px rgba(236, 37, 90, 0.6),
+            0 0 25px rgba(41, 44, 109, 0.3),
+            0 0 35px rgba(41, 44, 109, 0.15);
+    }
+    100% {
+        text-shadow: 
+            0 0 10px rgba(236, 37, 90, 0.4),
+            0 0 20px rgba(41, 44, 109, 0.2),
+            0 0 30px rgba(41, 44, 109, 0.1);
+    }
+}
+
+.site-branding {
+    animation: fadeIn 1.2s ease-out;
+    position: relative;
+    z-index: 1; /* Keep branding at the same level as header */
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.site-title {
+    font-family: 'Monoton', cursive;
+    font-size: 3.5rem;
+    background: linear-gradient(to right, #ffffff, #f0f0f0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
     margin: 0;
     font-weight: 400;
-    letter-spacing: 1px;
-    margin-top: 8px;
-    text-shadow: 
-        0 0 5px rgba(52, 152, 219, 0.8),
-        0 0 8px rgba(52, 152, 219, 0.6);
-    animation: tagline-glow 2.5s ease-in-out infinite alternate;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: gentleGlow 3s infinite;
     position: relative;
-    z-index: 4;
+    display: inline-block;
+    z-index: 1; /* Keep title at same level as branding */
+    pointer-events: none; /* Allow clicks to pass through the title */
 }
 
-@keyframes neon-pulse {
+@keyframes gentleGlow {
     0% {
         text-shadow: 
-            0 0 7px rgba(236, 37, 90, 0.9),
-            0 0 10px rgba(236, 37, 90, 0.7),
-            0 0 21px rgba(236, 37, 90, 0.5),
-            0 0 42px rgba(236, 37, 90, 0.4);
+            0 0 10px rgba(236, 37, 90, 0.4),
+            0 0 20px rgba(41, 44, 109, 0.2),
+            0 0 30px rgba(41, 44, 109, 0.1);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px rgba(236, 37, 90, 0.6),
+            0 0 25px rgba(41, 44, 109, 0.3),
+            0 0 35px rgba(41, 44, 109, 0.15);
     }
     100% {
         text-shadow: 
-            0 0 10px rgba(236, 37, 90, 1),
-            0 0 17px rgba(236, 37, 90, 0.9),
-            0 0 30px rgba(236, 37, 90, 0.7),
-            0 0 55px rgba(236, 37, 90, 0.5);
+            0 0 10px rgba(236, 37, 90, 0.4),
+            0 0 20px rgba(41, 44, 109, 0.2),
+            0 0 30px rgba(41, 44, 109, 0.1);
     }
 }
 
-@keyframes tagline-glow {
-    0% {
-        text-shadow:
-            0 0 5px rgba(52, 152, 219, 0.8),
-            0 0 8px rgba(52, 152, 219, 0.6);
+.site-tagline {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 10px 0 5px 0;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    position: relative;
+    max-width: 600px;
+    margin: 10px auto 0;
+}
+
+/* Calendar Controls - Better integration with header */
+.calendar-controls {
+    background: linear-gradient(135deg, rgba(41, 44, 109, 0.95) 0%, rgba(26, 28, 61, 0.95) 100%);
+    padding: 18px 30px;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 35px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.calendar-controls::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, 
+            rgba(255, 255, 255, 0.03) 0%, 
+            rgba(255, 255, 255, 0) 50%,
+            rgba(255, 255, 255, 0.03) 100%);
+    pointer-events: none;
+}
+
+.calendar-controls h2 {
+    font-family: 'Spotify Mix', sans-serif;
+    font-size: 1.9rem;
+    color: #ffffff;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    display: none; /* Hide the month/year text */
+}
+
+.calendar-controls button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-controls button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-controls button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Month Selector Improved */
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.month-selector:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#month-select {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-family: 'Spotify Mix', sans-serif;
+    font-size: 1rem;
+    padding: 6px 30px 6px 8px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px;
+    min-width: 130px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+#month-select:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#month-select option {
+    background: #292C6D;
+    color: #ffffff;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-family: 'Spotify Mix', sans-serif;
+}
+
+#year-display {
+    color: #ffffff;
+    font-family: 'Spotify Mix', sans-serif;
+    font-size: 1rem;
+    padding: 6px 10px;
+    min-width: 60px;
+    text-align: center;
+    font-weight: 600;
+    background: rgba(236, 37, 90, 0.15);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Today button styling enhancement */
+.today-button {
+    background: linear-gradient(135deg, #EC255A 0%, #FF6B6B 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 10px rgba(236, 37, 90, 0.2) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.today-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+.today-button:hover {
+    background: linear-gradient(135deg, #d01a4c 0%, #ff5252 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 15px rgba(236, 37, 90, 0.3) !important;
+}
+
+.today-button:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 2px 8px rgba(236, 37, 90, 0.2) !important;
+}
+
+/* Header Auth Section Enhanced */
+.header-auth {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-left: auto;
+}
+
+.header-auth #login-form,
+.header-auth #user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-auth .google-button {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    padding: 10px 20px !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif !important;
+    font-size: 0.95rem !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    min-width: 120px;
+    justify-content: center;
+}
+
+.header-auth .google-button img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
+.header-auth .google-button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25) !important;
+}
+
+.header-auth .google-button:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.header-auth #user-email {
+    color: #ffffff;
+    font-family: 'Spotify Mix', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.header-auth #logout-button {
+    background: rgba(236, 37, 90, 0.15);
+    border: 1px solid rgba(236, 37, 90, 0.3);
+    color: #ffffff;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Spotify Mix', sans-serif;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.header-auth #logout-button:hover {
+    background: rgba(236, 37, 90, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .site-header {
+        padding: 20px 15px;
+        border-radius: 16px 16px 0 0;
     }
-    100% {
-        text-shadow:
-            0 0 7px rgba(52, 152, 219, 0.9),
-            0 0 12px rgba(52, 152, 219, 0.7),
-            0 0 20px rgba(52, 152, 219, 0.5);
+    
+    .site-title {
+        font-size: 2.2rem;
     }
+    
+    .site-tagline {
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    .calendar-controls {
+        padding: 14px 15px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .calendar-controls h2 {
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+    }
+    
+    .month-selector {
+        width: 90%;
+        justify-content: center;
+    }
+    
+    .header-auth {
+        margin-top: 10px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .calendar-controls button {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .header-auth #user-email {
+        font-size: 0.85rem;
+    }
+}
+
+/* Hide the month-year display in the header controls */
+#month-year-display {
+    display: none; /* Hide the month/year text that appears next to login */
 }

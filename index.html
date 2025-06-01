@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planora - Organize your day, your way.</title>
+    <title>Planora - Plan your day. Own your time.</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="main-container">
-        <div class="calendar-controls">
-            <div class="brand-container">
-                <h1 class="brand-name" data-text="Planora">Planora</h1>
-                <p class="brand-tagline">Organize your day, your way.</p>
+        <div class="site-header">
+            <div class="site-branding">
+                <h1 class="site-title">Planora</h1>
+                <p class="site-tagline">Plan your day. Own your time.</p>
             </div>
+        </div>
+        
+        <div class="calendar-controls">
+            <h2 id="month-year-display">April & May 2025</h2>
             <button id="toggle-view-button">Month View</button>
             
             <div class="header-auth">
@@ -38,7 +42,7 @@
                 </div>
                 <div class="weather-content">
                     <div class="weather-icon">
-                        <img id="weather-icon-img" src="" alt="Weather Icon">
+                        <!-- SVG will be inserted here by JavaScript -->
                     </div>
                     <div class="weather-details">
                         <div class="weather-temp">
@@ -68,13 +72,10 @@
                                 <span class="weather-unit">mph</span>
                             </div>
                         </div>
-                    </div>
-                    <button id="request-location-btn" class="location-request-button">
-                        <span>📍</span> Share Location
-                    </button>
                 </div>
             </div>
-            
+        </div>
+        
         <!-- Main Goals Section -->
         <div id="main-goals-section" class="main-goals-section">
             <h3>Things To Do Today</h3>
@@ -109,7 +110,7 @@
                     <div class="calendar-header">
                         <div class="month-navigation">
                             <button id="prev-month" class="month-nav-button">&laquo;</button>
-                            <h3 id="month-year-1">April 2025</h3>
+                        <h3 id="month-year-1">April 2025</h3>
                             <button id="next-month" class="month-nav-button">&raquo;</button>
                         </div>
                         <button id="today-button" class="today-button">Today</button>

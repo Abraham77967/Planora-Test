@@ -55,12 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return goal; // Already an object, or will be filtered if invalid
     }).filter(goal => goal && typeof goal.text === 'string'); // Ensure valid structure
     
-    // Make sure the Checklist Progress panel is rendered on page load
-    setTimeout(() => {
-        console.log('[INIT] Rendering event progress panel on page load');
-        renderEventProgressPanel();
-    }, 500);  // Small delay to ensure DOM is fully ready
-    
     // --- News Integration ---
     const refreshNewsButton = document.getElementById('refresh-news-button');
     let currentNewsCategory = 'technology'; // Default category
@@ -997,9 +991,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Renders single month for desktop view (replacing two-month view)
     function renderDesktopView() {
         const monthDate = new Date(desktopMonthDate);
-        
+
         renderCalendar(monthDate, calendarGrid1, monthYearElement1);
-        
+
         // Update the main control header for desktop view
         const monthName = monthDate.toLocaleString('default', { month: 'long' });
         const year = monthDate.getFullYear();
@@ -1111,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calendarGrid1.appendChild(fragment);
         console.log(`[NEW MOBILE RENDER] Appended all 14 day cells. Total children in grid: ${calendarGrid1.children.length}`);
     }
-    
+
     // --- Combined Render Function (Checks screen size) ---
     function renderCalendarView() {
         console.log('[CALENDAR VIEW] Starting calendar render');
@@ -1211,14 +1205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const globalNotes = window.calendarNotes;
         
         console.log('[PROGRESS PANEL] Starting to render progress panel');
-        console.log('[PROGRESS PANEL] Current global notes object:', globalNotes);
-        
-        // Get the progress panel container
-        const progressItemsContainer = document.getElementById('progress-items-container');
-        if (!progressItemsContainer) {
-            console.error('[PROGRESS PANEL] Container element not found in DOM!');
-            return;
-        }
         
         // Clear existing panel content
         progressItemsContainer.innerHTML = '';
@@ -1229,7 +1215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Empty check for test mode
         if (datesWithEvents.length === 0) {
-            console.log('[PROGRESS PANEL] No dates with events found');
             const noEventsMessage = document.createElement('div');
             noEventsMessage.classList.add('no-events-message-panel');
             noEventsMessage.textContent = 'No events with checklists. Add some events to see them here!';
@@ -1237,26 +1222,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        datesWithEvents.forEach(([dateString, eventsArray]) => {
-            console.log(`[PROGRESS PANEL] Date: ${dateString}, Events: ${eventsArray.length}`);
-        });
-        
         // Filter to include only events with checklists and sort by date
         let eventsWithChecklists = [];
         
         datesWithEvents.forEach(([dateString, eventsArray]) => {
-            console.log(`[PROGRESS PANEL] Processing date ${dateString} with ${eventsArray.length} events`);
+            console.log(`Processing date ${dateString} with ${eventsArray.length} events`);
             
             // For each date, filter to events with checklists
             const dateEvents = eventsArray.filter(event => {
-                // Log each event's data for debugging
-                console.log(`[PROGRESS PANEL] Event ${event.id || 'unknown'}: `, event);
                 const hasChecklist = event.checklist && event.checklist.length > 0;
-                console.log(`[PROGRESS PANEL] Event ${event.id || 'unknown'}: has checklist = ${hasChecklist}, items: ${event.checklist ? event.checklist.length : 0}`);
+                console.log(`Event ${event.id}: has checklist = ${hasChecklist}, items: ${event.checklist ? event.checklist.length : 0}`);
                 return hasChecklist;
             });
             
-            console.log(`[PROGRESS PANEL] Found ${dateEvents.length} events with checklists for ${dateString}`);
+            console.log(`Found ${dateEvents.length} events with checklists for ${dateString}`);
             
             // Add date and event details to our array
             dateEvents.forEach(event => {
@@ -1267,17 +1246,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        console.log('[PROGRESS PANEL] Total events with checklists:', eventsWithChecklists.length);
-        if (eventsWithChecklists.length > 0) {
-            console.log('[PROGRESS PANEL] First event with checklist:', eventsWithChecklists[0]);
-        }
+        console.log('Total events with checklists:', eventsWithChecklists.length);
         
         // Sort by date
         eventsWithChecklists.sort((a, b) => new Date(a.dateString) - new Date(b.dateString));
         
         // If no events with checklists, show message
         if (eventsWithChecklists.length === 0) {
-            console.log('[PROGRESS PANEL] No events with checklists found');
             const noEventsMessage = document.createElement('div');
             noEventsMessage.classList.add('no-events-message-panel');
             noEventsMessage.textContent = 'No upcoming events with checklists. Add some checklists to your events!';
@@ -1295,12 +1270,8 @@ document.addEventListener('DOMContentLoaded', () => {
             groupedByDate[item.dateString].push(item.event);
         });
         
-        console.log('[PROGRESS PANEL] Events grouped by date:', groupedByDate);
-        
         // Create and append elements for each date
         Object.entries(groupedByDate).forEach(([dateString, events]) => {
-            console.log(`[PROGRESS PANEL] Rendering date ${dateString} with ${events.length} events`);
-            
             // Create the card container
             const itemContainer = document.createElement('div');
             itemContainer.classList.add('progress-item');
@@ -1340,8 +1311,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add each event
             events.forEach((event, index) => {
-                console.log(`[PROGRESS PANEL] Rendering event ${index} for date ${dateString}:`, event);
-                
                 const eventDiv = document.createElement('div');
                 eventDiv.className = 'panel-event';
                 
@@ -1390,27 +1359,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Add checklist progress for this event
                 if (event.checklist && event.checklist.length > 0) {
-                    console.log(`[PROGRESS PANEL] Event ${event.id} has ${event.checklist.length} checklist items`);
-                    
                     const totalItems = event.checklist.length;
                     const completedItems = event.checklist.filter(item => item.done).length;
                     const percent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
-                    const progressContainer = document.createElement('div');
-                    progressContainer.classList.add('progress-container');
-                    
-                    const progressBarContainer = document.createElement('div');
-                    progressBarContainer.classList.add('progress-bar-container');
-                    
-                    const progressBar = document.createElement('div');
-                    progressBar.classList.add('progress-bar');
+            const progressContainer = document.createElement('div');
+            progressContainer.classList.add('progress-container');
+            
+            const progressBarContainer = document.createElement('div');
+            progressBarContainer.classList.add('progress-bar-container');
+            
+            const progressBar = document.createElement('div');
+            progressBar.classList.add('progress-bar');
                     progressBar.style.width = `${percent}%`;
-                    
-                    progressBarContainer.appendChild(progressBar);
-                    progressContainer.appendChild(progressBarContainer);
+            
+            progressBarContainer.appendChild(progressBar);
+            progressContainer.appendChild(progressBarContainer);
 
-                    const progressSummary = document.createElement('div');
-                    progressSummary.classList.add('progress-summary');
+            const progressSummary = document.createElement('div');
+            progressSummary.classList.add('progress-summary');
                     progressSummary.textContent = `${completedItems}/${totalItems} Tasks`;
                     
                     // Add toggle button
@@ -1430,106 +1397,101 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     
                     // Create checklist container (initially visible)
-                    const checklistContainer = document.createElement('div');
+            const checklistContainer = document.createElement('div');
                     checklistContainer.classList.add('panel-checklist-container');
                     checklistContainer.style.display = 'block';
-                    
+            
                     // Add checklist items
                     const checklistUl = document.createElement('ul');
                     checklistUl.classList.add('panel-checklist');
 
                     // Add clickable checklist items
-                    event.checklist.forEach((item, idx) => {
-                        console.log(`[PROGRESS PANEL] Adding checklist item ${idx}: ${item.task}, done: ${item.done}`);
-                        
-                        const li = document.createElement('li');
+                    event.checklist.forEach((item, index) => {
+                const li = document.createElement('li');
 
-                        // Create checkbox with proper event handler
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.id = `panel-cb-${event.id}-${idx}`;
-                        checkbox.checked = item.done;
+                // Create checkbox with proper event handler
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `panel-cb-${event.id}-${index}`;
+                checkbox.checked = item.done;
+                
+                // Create label once
+                const label = document.createElement('label');
+                label.classList.add('panel-checklist-label');
+                label.htmlFor = checkbox.id;
+                label.textContent = item.task;
+                
+                if (item.done) {
+                    label.classList.add('completed');
+                }
+                
+                // Prevent event propagation to parent
+                checkbox.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent opening edit modal
+                });
+                
+                label.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent opening edit modal
+                });
+                
+                // Add elements to the list item
+                li.appendChild(checkbox);
+                li.appendChild(label);
+                
+                // Add deadline display if there is a deadline - now positioned after label
+                if (item.deadline) {
+                    const deadlineElement = createDeadlineElement(item.deadline);
+                    if (deadlineElement) {
+                        deadlineElement.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent opening edit modal
+                });
+                        li.appendChild(deadlineElement);
+                    }
+                }
+                
+                // Add event listener for checkbox changes
+                checkbox.addEventListener('change', (e) => {
+                    // Always use the global notes object
+                    const globalNotes = window.calendarNotes;
+                    
+                    // Update the checked state in the UI
+                    label.classList.toggle('completed', checkbox.checked);
+                    
+                    // Find and update the item in the data structure
+                    const updatedEvents = globalNotes[dateString] || [];
+                    const eventIndex = updatedEvents.findIndex(e => e.id === event.id);
+                    
+                    if (eventIndex !== -1) {
+                        const checklistItems = updatedEvents[eventIndex].checklist || [];
+                        const itemIndex = checklistItems.findIndex(i => i.task === item.task);
                         
-                        // Create label once
-                        const label = document.createElement('label');
-                        label.classList.add('panel-checklist-label');
-                        label.htmlFor = checkbox.id;
-                        label.textContent = item.task;
-                        
-                        if (item.done) {
-                            label.classList.add('completed');
-                        }
-                        
-                        // Prevent event propagation to parent
-                        checkbox.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Prevent opening edit modal
-                        });
-                        
-                        label.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Prevent opening edit modal
-                        });
-                        
-                        // Add elements to the list item
-                        li.appendChild(checkbox);
-                        li.appendChild(label);
-                        
-                        // Add deadline display if there is a deadline - now positioned after label
-                        if (item.deadline) {
-                            const deadlineElement = createDeadlineElement(item.deadline);
-                            if (deadlineElement) {
-                                deadlineElement.addEventListener('click', (e) => {
-                                    e.stopPropagation(); // Prevent opening edit modal
-                                });
-                                li.appendChild(deadlineElement);
+                        if (itemIndex !== -1) {
+                            // Update the done state
+                            checklistItems[itemIndex].done = checkbox.checked;
+                            
+                            // Update in the data structure
+                            updatedEvents[eventIndex].checklist = checklistItems;
+                            globalNotes[dateString] = updatedEvents;
+                            // Update local reference
+                            notes = globalNotes;
+                            
+                            // Update progress bar
+                            const totalItems = checklistItems.length;
+                            const completedItems = checklistItems.filter(i => i.done).length;
+                            const percent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+                            progressBar.style.width = `${percent}%`;
+                            progressSummary.textContent = `${completedItems}/${totalItems} Tasks`;
+                            
+                            // Save to Firebase if signed in
+                            if (firebase.auth().currentUser) {
+                                saveNotesToFirebase();
+                                console.log('[CHECKBOX] Saved change to Firebase');
+                            } else {
+                                console.log('[CHECKBOX] Test mode: Checklist update saved to memory only');
                             }
                         }
-                        
-                        // Add event listener for checkbox changes
-                        checkbox.addEventListener('change', (e) => {
-                            // Always use the global notes object
-                            const globalNotes = window.calendarNotes;
-                            
-                            // Update the checked state in the UI
-                            label.classList.toggle('completed', checkbox.checked);
-                            
-                            // Find and update the item in the data structure
-                            const updatedEvents = globalNotes[dateString] || [];
-                            const eventIndex = updatedEvents.findIndex(e => e.id === event.id);
-                            
-                            if (eventIndex !== -1) {
-                                const checklistItems = updatedEvents[eventIndex].checklist || [];
-                                const itemIndex = checklistItems.findIndex(i => i.task === item.task);
-                                
-                                if (itemIndex !== -1) {
-                                    console.log(`[PROGRESS PANEL] Updating checklist item ${itemIndex} in event ${event.id} to done: ${checkbox.checked}`);
-                                    
-                                    // Update the done state
-                                    checklistItems[itemIndex].done = checkbox.checked;
-                                    
-                                    // Update in the data structure
-                                    updatedEvents[eventIndex].checklist = checklistItems;
-                                    globalNotes[dateString] = updatedEvents;
-                                    
-                                    // Update local reference
-                                    notes = globalNotes;
-                                    
-                                    // Update progress bar
-                                    const totalItems = checklistItems.length;
-                                    const completedItems = checklistItems.filter(i => i.done).length;
-                                    const percent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
-                                    progressBar.style.width = `${percent}%`;
-                                    progressSummary.textContent = `${completedItems}/${totalItems} Tasks`;
-                                    
-                                    // Save to Firebase if signed in
-                                    if (firebase.auth().currentUser) {
-                                        saveNotesToFirebase();
-                                        console.log('[CHECKBOX] Saved change to Firebase');
-                                    } else {
-                                        console.log('[CHECKBOX] Test mode: Checklist update saved to memory only');
-                                    }
-                                }
-                            }
-                        });
+                    }
+                });
                         
                         // Append the list item to the checklist
                         checklistUl.appendChild(li);
@@ -1549,8 +1511,6 @@ document.addEventListener('DOMContentLoaded', () => {
             itemContainer.appendChild(eventsContainer);
             progressItemsContainer.appendChild(itemContainer);
         });
-        
-        console.log('[PROGRESS PANEL] Finished rendering progress panel');
     }
 
     // --- Modal Functions ---
@@ -2256,9 +2216,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update calendar view
         renderCalendarView();
         
-        // IMPORTANT: Update the Checklist Progress panel
-        renderEventProgressPanel();
-        
         // Log the current state
         console.log('[UI UPDATE] Completed. Events for date', selectedDateString + ':',
             globalNotes[selectedDateString] ? globalNotes[selectedDateString].length : 0);
@@ -2312,7 +2269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isDesktop) {
             desktopMonthDate.setMonth(desktopMonthDate.getMonth() + 1);
         } else {
-            if (currentView === 'week') {
+             if (currentView === 'week') {
                 mobileWeekStartDate.setDate(mobileWeekStartDate.getDate() + 7);
             } else {
                 mobileMonthDate.setMonth(mobileMonthDate.getMonth() + 1);
@@ -2548,20 +2505,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const defaultLon = -87.9795;
         const units = 'imperial'; // Use imperial for Fahrenheit
         
-        // Get the weather container
+        // Get the weather container and create a location button if needed
         const weatherWidget = document.getElementById('weather-widget');
-        
-        // Attach event listener to the location button that's already in the HTML
-        const locationBtn = document.getElementById('request-location-btn');
-        if (locationBtn) {
-            // Remove any existing listeners first to prevent duplicates
-            const newLocationBtn = locationBtn.cloneNode(true);
-            locationBtn.parentNode.replaceChild(newLocationBtn, locationBtn);
-            newLocationBtn.addEventListener('click', requestLocationPermission);
-            console.log('[WEATHER] Location button event listener attached');
-        } else {
-            console.log('[WEATHER] Location button not found in DOM');
-        }
         
         // Function to show loading state in the weather widget
         function showWeatherLoading() {
@@ -2603,8 +2548,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
         
-        // Function to add location request button - no longer needed since it's in HTML
-        // But keeping it for reference and backward compatibility
+        // Function to add location request button
         function addLocationRequestButton() {
             // Check if button already exists
             if (document.getElementById('request-location-btn')) return;
@@ -2616,9 +2560,9 @@ document.addEventListener('DOMContentLoaded', () => {
             locationBtn.innerHTML = '<span>📍</span> Use my location';
             locationBtn.addEventListener('click', requestLocationPermission);
             
-            // Add button to weather widget footer instead of header
-            const weatherFooter = weatherWidget.querySelector('.weather-footer');
-            weatherFooter.appendChild(locationBtn);
+            // Add button to weather widget header
+            const weatherHeader = weatherWidget.querySelector('.weather-header');
+            weatherHeader.appendChild(locationBtn);
         }
         
         // Function to request location permission
@@ -2649,7 +2593,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.getElementById('weather-location').textContent = 'Default location';
                     },
                     // Options
-                    { timeout: 10000, enableHighAccuracy: true, maximumAge: 0 }
+                    { timeout: 10000 }
                 );
             } else {
                 // Browser doesn't support geolocation
@@ -2668,16 +2612,90 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedLat && savedLon && locationAge && locationAge < 3600000) {
             console.log('[WEATHER] Using saved location');
             getWeatherFromCoords(parseFloat(savedLat), parseFloat(savedLon));
-            
-            // Hide the location button if we have saved location
-            if (locationBtn) {
-                locationBtn.style.display = 'none';
-            }
         } else {
-            // Use default location initially, but the user can click the button to update
-            console.log('[WEATHER] Using default location initially');
-            getWeatherFromCoords(defaultLat, defaultLon);
+            // Try to get fresh coordinates
+            console.log('[WEATHER] Requesting fresh location');
+            addLocationRequestButton();
+            
+            // Auto-prompt for location if this is the first time
+            if (!localStorage.getItem('weatherLocationRequested')) {
+                localStorage.setItem('weatherLocationRequested', 'true');
+                requestLocationPermission();
+            } else {
+                // If not first time, use default location but show location button
+                getWeatherFromCoords(defaultLat, defaultLon);
+            }
         }
+    }
+
+    function getWeatherSVG(condition, isDay) {
+        // Normalize condition
+        const cond = condition.toLowerCase();
+        if (cond.includes('clear')) {
+            // Simplistic elegant sun
+            return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="15" fill="#FFD93B"/>
+                <g stroke="#FFD93B" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="40" y1="15" x2="40" y2="10"/>
+                    <line x1="40" y1="70" x2="40" y2="65"/>
+                    <line x1="15" y1="40" x2="10" y2="40"/>
+                    <line x1="70" y1="40" x2="65" y2="40"/>
+                    <line x1="23" y1="23" x2="19" y2="19"/>
+                    <line x1="61" y1="61" x2="57" y2="57"/>
+                    <line x1="23" y1="57" x2="19" y2="61"/>
+                    <line x1="61" y1="19" x2="57" y2="23"/>
+                </g>
+            </svg>`;
+        } else if (cond.includes('cloud')) {
+            // Simplistic elegant cloud
+            return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M60,46 C66.6,46 72,51.4 72,58 C72,64.6 66.6,70 60,70 L25,70 C18.4,70 13,64.6 13,58 C13,51.4 18.4,46 25,46 C25,36.1 33.1,28 43,28 C51.6,28 58.9,34.1 60.8,42.4" fill="none" stroke="#B0BEC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+        } else if (cond.includes('rain')) {
+            // Simplistic elegant rain
+            return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M60,40 C66.6,40 72,45.4 72,52 C72,58.6 66.6,64 60,64 L25,64 C18.4,64 13,58.6 13,52 C13,45.4 18.4,40 25,40 C25,30.1 33.1,22 43,22 C51.6,22 58.9,28.1 60.8,36.4" fill="none" stroke="#B0BEC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="30" y1="70" x2="28" y2="76" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round"/>
+                <line x1="40" y1="70" x2="38" y2="76" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round"/>
+                <line x1="50" y1="70" x2="48" y2="76" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round"/>
+            </svg>`;
+        } else if (cond.includes('snow')) {
+            // Simplistic elegant snow
+            return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M60,40 C66.6,40 72,45.4 72,52 C72,58.6 66.6,64 60,64 L25,64 C18.4,64 13,58.6 13,52 C13,45.4 18.4,40 25,40 C25,30.1 33.1,22 43,22 C51.6,22 58.9,28.1 60.8,36.4" fill="none" stroke="#B0BEC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="30" cy="72" r="2" fill="#90CAF9"/>
+                <circle cx="40" cy="72" r="2" fill="#90CAF9"/>
+                <circle cx="50" cy="72" r="2" fill="#90CAF9"/>
+            </svg>`;
+        } else if (cond.includes('thunder')) {
+            // Simplistic elegant thunderstorm
+            return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M60,40 C66.6,40 72,45.4 72,52 C72,58.6 66.6,64 60,64 L25,64 C18.4,64 13,58.6 13,52 C13,45.4 18.4,40 25,40 C25,30.1 33.1,22 43,22 C51.6,22 58.9,28.1 60.8,36.4" fill="none" stroke="#B0BEC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M43,64 L48,72 L40,72 L45,80" stroke="#FFD93B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+        } else if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) {
+            // Simplistic elegant fog
+            return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M60,40 C66.6,40 72,45.4 72,52 C72,58.6 66.6,64 60,64 L25,64 C18.4,64 13,58.6 13,52 C13,45.4 18.4,40 25,40 C25,30.1 33.1,22 43,22 C51.6,22 58.9,28.1 60.8,36.4" fill="none" stroke="#B0BEC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="20" y1="70" x2="60" y2="70" stroke="#B0BEC5" stroke-width="2" stroke-linecap="round"/>
+                <line x1="25" y1="76" x2="55" y2="76" stroke="#B0BEC5" stroke-width="2" stroke-linecap="round"/>
+            </svg>`;
+        }
+        // Default: partly cloudy (sun and cloud)
+        return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="35" cy="34" r="10" fill="#FFD93B"/>
+            <g stroke="#FFD93B" stroke-width="2" stroke-linecap="round">
+                <line x1="35" y1="18" x2="35" y2="14"/>
+                <line x1="35" y1="54" x2="35" y2="50"/>
+                <line x1="18" y1="34" x2="14" y2="34"/>
+                <line x1="56" y1="34" x2="52" y2="34"/>
+                <line x1="23" y1="22" x2="20" y2="19"/>
+                <line x1="50" y1="49" x2="47" y2="46"/>
+                <line x1="23" y1="46" x2="20" y2="49"/>
+                <line x1="50" y1="19" x2="47" y2="22"/>
+            </g>
+            <path d="M60,46 C66.6,46 72,51.4 72,58 C72,64.6 66.6,70 60,70 L30,70 C23.4,70 18,64.6 18,58 C18,51.4 23.4,46 30,46 C30,41 34.1,36 40,36" fill="none" stroke="#B0BEC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
     }
 
     function updateWeatherWidget(data) {
@@ -2695,10 +2713,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('weather-location').textContent = locationName;
         document.getElementById('weather-humidity').textContent = humidity;
         document.getElementById('weather-wind').textContent = windSpeed;
-        
-        // Update weather icon
-        const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
-        document.getElementById('weather-icon-img').src = iconUrl;
+
+        // Use SVG icon
+        const isDay = data.weather[0].icon && data.weather[0].icon.includes('d');
+        document.querySelector('.weather-icon').innerHTML = getWeatherSVG(condition, isDay);
         
         // Update date
         const today = new Date();
@@ -2894,206 +2912,4 @@ function refreshAllDeadlineDisplays() {
     });
     
     console.log('[DEADLINES] Deadline displays refreshed');
-}
-
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded');
-    
-    // Initialize the location request button
-    initializeLocationButton();
-    
-    // Initialize weather functionality
-    fetchWeatherData();
-});
-
-// Initialize the location button
-function initializeLocationButton() {
-    const locationBtn = document.getElementById('request-location-btn');
-    if (locationBtn) {
-        console.log('Location button found, attaching event listener');
-        locationBtn.addEventListener('click', requestLocationPermission);
-    } else {
-        console.error('Location button not found in the DOM');
-    }
-}
-
-// Function to request location permission
-function requestLocationPermission() {
-    console.log('Location permission requested');
-    
-    // Show loading status
-    document.getElementById('weather-condition').textContent = 'Requesting location...';
-    document.getElementById('weather-location').textContent = 'Please allow access';
-    
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            // Success callback
-            (position) => {
-                console.log('Location successfully obtained');
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                
-                // Use the coordinates to fetch weather
-                getWeatherData(lat, lon);
-                
-                // Hide location button after successful location
-                const locationBtn = document.getElementById('request-location-btn');
-                if (locationBtn) {
-                    locationBtn.style.display = 'none';
-                }
-            },
-            // Error callback
-            (error) => {
-                console.error('Geolocation error:', error);
-                
-                // Show error message based on error code
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        document.getElementById('weather-condition').textContent = 'Location access denied';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        document.getElementById('weather-condition').textContent = 'Location unavailable';
-                        break;
-                    case error.TIMEOUT:
-                        document.getElementById('weather-condition').textContent = 'Location request timed out';
-                        break;
-                    default:
-                        document.getElementById('weather-condition').textContent = 'Cannot get location';
-                }
-                document.getElementById('weather-location').textContent = 'Using default location';
-                
-                // Use default location as fallback
-                getWeatherData(42.2192, -87.9795);
-            },
-            // Options
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-        );
-    } else {
-        // Browser doesn't support geolocation
-        console.error('Geolocation is not supported by this browser');
-        document.getElementById('weather-condition').textContent = 'Geolocation not supported';
-        document.getElementById('weather-location').textContent = 'Using default location';
-        
-        // Use default location as fallback
-        getWeatherData(42.2192, -87.9795);
-    }
-}
-
-// Fetch weather data with coordinates
-function getWeatherData(lat, lon) {
-    const apiKey = 'b2cfa04dc7aff6a53b64fabc3a5307bc';
-    const units = 'imperial'; // For Fahrenheit
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${apiKey}`;
-    
-    console.log('Fetching weather data');
-    document.getElementById('weather-condition').textContent = 'Loading weather...';
-    
-    fetch(weatherUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Weather API error: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Weather data received:', data);
-            updateWeatherWidget(data);
-            
-            // Save location to localStorage
-            localStorage.setItem('weatherLat', lat);
-            localStorage.setItem('weatherLon', lon);
-            localStorage.setItem('weatherLocationTime', Date.now());
-        })
-        .catch(error => {
-            console.error('Error fetching weather:', error);
-            document.getElementById('weather-condition').textContent = 'Weather data unavailable';
-            document.getElementById('weather-location').textContent = 'Try again later';
-        });
-}
-
-// Update weather widget with data
-function updateWeatherWidget(data) {
-    // Extract weather information
-    const temp = Math.round(data.main.temp);
-    const condition = data.weather[0].description;
-    const locationName = data.name;
-    const humidity = data.main.humidity;
-    const windSpeed = Math.round(data.wind.speed);
-    const iconCode = data.weather[0].icon;
-    
-    // Update UI elements
-    document.getElementById('weather-temp').textContent = temp;
-    document.getElementById('weather-condition').textContent = capitalizeEachWord(condition);
-    document.getElementById('weather-location').textContent = locationName;
-    document.getElementById('weather-humidity').textContent = humidity;
-    document.getElementById('weather-wind').textContent = windSpeed;
-    
-    // Update weather icon
-    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
-    document.getElementById('weather-icon-img').src = iconUrl;
-    
-    // Update date
-    const today = new Date();
-    const options = { weekday: 'long', month: 'short', day: 'numeric' };
-    document.getElementById('weather-date').textContent = today.toLocaleDateString('en-US', options);
-}
-
-// Helper function to capitalize each word
-function capitalizeEachWord(str) {
-    return str.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
-}
-
-// Initial weather check
-function fetchWeatherData() {
-    // Check if we have saved location data
-    const savedLat = localStorage.getItem('weatherLat');
-    const savedLon = localStorage.getItem('weatherLon');
-    const savedTime = localStorage.getItem('weatherLocationTime');
-    
-    // If saved location is less than 1 hour old, use it
-    if (savedLat && savedLon && savedTime) {
-        const locationAge = Date.now() - parseInt(savedTime);
-        if (locationAge < 3600000) { // 1 hour in milliseconds
-            console.log('Using saved location');
-            getWeatherData(parseFloat(savedLat), parseFloat(savedLon));
-            
-            // Hide location button when using saved location
-            const locationBtn = document.getElementById('request-location-btn');
-            if (locationBtn) {
-                locationBtn.style.display = 'none';
-            }
-            return;
-        }
-    }
-    
-    // Otherwise show "No info available" state until user shares location
-    console.log('No location available, showing initial state');
-    document.getElementById('weather-temp').textContent = '--';
-    document.getElementById('weather-condition').textContent = 'No info available';
-    document.getElementById('weather-location').textContent = 'Share your location';
-    document.getElementById('weather-humidity').textContent = '--';
-    document.getElementById('weather-wind').textContent = '--';
-    document.getElementById('weather-icon-img').src = 'https://openweathermap.org/img/wn/03d@4x.png'; // Generic cloud icon
-    
-    // Make sure location button is visible
-    const locationBtn = document.getElementById('request-location-btn');
-    if (locationBtn) {
-        locationBtn.style.display = 'block';
-        // Add subtle animation to highlight the button
-        locationBtn.classList.add('pulse-animation');
-        // Remove animation after a few seconds
-        setTimeout(() => {
-            locationBtn.classList.remove('pulse-animation');
-        }, 5000);
-    }
-    
-    // Update date even without weather
-    const today = new Date();
-    const options = { weekday: 'long', month: 'short', day: 'numeric' };
-    document.getElementById('weather-date').textContent = today.toLocaleDateString('en-US', options);
-}
+} 
